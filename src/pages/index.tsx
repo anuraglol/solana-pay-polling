@@ -1,10 +1,8 @@
-import Image from "next/image";
-import { Inter } from "next/font/google";
-import { cn } from "@/lib/utils";
 import { QRElem } from "@/components/qr";
-import { useTransactionListener } from "@/lib/hooks";
+import { useTransactionListener, useUpdateData } from "@/lib/hooks";
+import { cn } from "@/lib/utils";
+import { Inter } from "next/font/google";
 import { Toaster } from "sonner";
-import { useUpdateData } from "@/lib/hooks/use-update-data";
 
 const inter = Inter({ subsets: ["latin"], weight: "variable" });
 
