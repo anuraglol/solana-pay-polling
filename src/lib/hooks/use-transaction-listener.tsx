@@ -1,10 +1,19 @@
 import { findReference } from "@solana/pay";
-import { useQuery } from "@tanstack/react-query";
+import { UseMutateAsyncFunction, useQuery } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { z } from "zod";
 import { reference } from "../constants";
 import { useConnection } from "./use-connection";
+import { TransactionResponse } from "@solana/web3.js";
 
-const useTransactionListener = () => {
+const useTransactionListener = (
+  callbackFn?: UseMutateAsyncFunction<
+    TransactionResponse | null,
+    unknown,
+    string,
+    unknown
+  >
+) => {
   const connection = useConnection();
 
   const { data, isLoading, isRefetchError } = useQuery({
@@ -22,13 +31,19 @@ const useTransactionListener = () => {
     },
     onSuccess: (data) => {
       if (z.string().safeParse(data!).success) {
-        console.log("Transaction found!");
+        if (callbackFn) {
+          toast.promise(callbackFn(data), {
+            loading: "Loading...",
+            success: "Success!",
+            error: "Error!",
+          });
+        }
       }
     },
-    onError: (error) => {
-      console.log(error);
-    },
+    onError: (error) => {},
     refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    refetchIntervalInBackground: true,
     retry: false,
     refetchInterval: (d) => {
       if (z.string().safeParse(d!).success) {
